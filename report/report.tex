@@ -71,16 +71,26 @@ our implementation             &68.6\%	&14sec \\
 \end{center}
 \end{table}
 
-The accuracy of the project’s implementation against Weka and scikit-learn is compared to demonstrate
-its correctness.  Initial values were used to compare the level of accuracy to other implementations shown in ~\ref{clas-table}. The Weka implementation used bagging of J48 decision trees to best correlate to the implementation used in this project. The Weka random forest implementation uses other additions such as choosing uncorrelated trees to optimize the results. The Weka platform does not give an option for maximum tree depth, but again, to better compare to this project's implementation, binary splitting was used.
+\begin{table}[h]
+\caption{Parameters used to generate the results for our implementation in Table ~\ref{clas-table}}
+\label{params-table}
+\begin{center}
+\begin{tabular}{lll}
+\multicolumn{1}{c}{\bf Parameter} &\multicolumn{1}{c}{\bf Value}
+\\ \hline \\
+Trees &32 \\
+Depth &5 \\
+Features &5 \\
+Split Size &2 \\
+Splitting Criteria &Gini
+\end{tabular}
+\end{center}
+\end{table}
 
-From Table~\ref{clas-table}, it can be seen that all three implementations of random forest yield similar results using similar parameter values (as is possible by the user). The parameters for our implementation were:
-\begin{description}
-\item [Trees] 32
-\item [Depth] 5
-\item [Features] 5
-\item [Split Size] 2
-\end{description}
+The accuracy of the project’s implementation against Weka and scikit-learn is compared to demonstrate
+its correctness.  Initial values were used to compare the level of accuracy to other implementations shown in Table ~\ref{clas-table}. The Weka implementation used bagging of J48 decision trees to best correlate to the implementation used in this project. The Weka random forest implementation uses other additions such as choosing uncorrelated trees to optimize the results. The Weka platform does not give an option for maximum tree depth, but again, to better compare to this project's implementation, binary splitting was used.
+
+From Table ~\ref{clas-table}, it can be seen that all three implementations of random forest yield similar results using similar parameter values (as is possible by the user). The parameters for our implementation were as seen in Table ~\ref{params-table}.
 
 It was noted however that when performing on standardized data, such that values are centered by their means and divided by the standard deviation, the accuracy was significantly lower for all three implementations, around 55\% accuracy (not shown here). This can be due to the sensitivity of the splitting using Gini impurity or entropy with small values, or perhaps some information is lost on the impact of certain features. The time taken for completion is difficult to compare since coding implementations are different (python vs C), however to improve speed, multi-processing was implemented. Using 4 processes running the same parameters as shown above for target class GP\_greater\_than\_0, the time of $\approx$ 14 seconds is slower, however not unreasonable, this addition was a great improvement over a single process taking 41 seconds.
 
@@ -151,19 +161,28 @@ It is discussed in literature that an optimal value for the number of features t
 \label{fig:n_features}
 \end{figure}
 
-Following our results, shown in figure ~\ref{fig:n_features}, we observe a maximum train accuracy for 5 features, which agrees with literature for an optimal number of features. We observe, however, that the number of features used has less of an impact on the total accuracy when comparing to the above observations for varying number of trees and maximum tree depth. The maximum depth for optimal test accuracy also does not agree with the training value, and the variance between each run makes drawing a conclusion on the over-all impact of this parameter difficult.
+Following our results, shown in Figure ~\ref{fig:n_features}, we observe a maximum train accuracy for 5 features, which agrees with literature for an optimal number of features. We observe, however, that the number of features used has less of an impact on the total accuracy when comparing to the above observations for varying number of trees and maximum tree depth. The maximum depth for optimal test accuracy also does not agree with the training value, and the variance between each run makes drawing a conclusion on the over-all impact of this parameter difficult.
 
 \subsubsection{Grid Search Parameter Optimization}
 
-Following the observations after varying each parameter individually, a grid search method was employed to find the optimal values for number of trees, maximum depth, and number of features for our implementation of random forest. The range of values used for the grid search were as follows:
+Following the observations after varying each parameter individually, a grid search method was employed to find the optimal values for number of trees, maximum depth, and number of features for our implementation of random forest. The range of values used for the grid search were as seen in Table ~\ref{grid-params-table}.
 
-\begin{description}
-\item [Trees] 2,8,16,32,64,128
-\item [Depth] 2,5,8,10,15,20
-\item [Features] 2,5,8,10,15,23
-\end{description}
+\begin{table}[h]
+\caption{Range of values used for the grid search of our implementation of random forest.}
+\label{grid-params-table}
+\begin{center}
+\begin{tabular}{lll}
+\multicolumn{1}{c}{\bf Parameter} &\multicolumn{1}{c}{\bf Values}
+\\ \hline \\
+Trees &2,8,16,32,64,128 \\
+Depth &2,5,8,10,15,20 \\
+Features &2,5,8,10,15,23 \\
+\end{tabular}
+\end{center}
+\end{table}
 
-With optimal values shown in table ~\ref{opt-table}. Figure ~\ref{fig:gridSClass} shows the effect of the different parameters on the accuracy of the classifier for the test set. As can be observed, there are some local regions of high accuracy. In particular, when looking at the number of features for values $\frac{\text{ln}(M)}{\text{ln}(2)}$ which in this case correspond to a value of approximately 5. It is surprising that the optimal number of features is very low with a value of 2. This may be a result of creating a higher chance of uncorrelated trees which has been shown to improve accuracy. \cite{Bharathidason2014}
+
+With optimal values shown in Table ~\ref{opt-table}. Figure ~\ref{fig:gridSClass} shows the effect of the different parameters on the accuracy of the classifier for the test set. As can be observed, there are some local regions of high accuracy. In particular, when looking at the number of features for values $\frac{\text{ln}(M)}{\text{ln}(2)}$ which in this case correspond to a value of approximately 5. It is surprising that the optimal number of features is very low with a value of 2. This may be a result of creating a higher chance of uncorrelated trees which has been shown to improve accuracy. \cite{Bharathidason2014}
 
 \begin{table}[h]
 \caption{Optimal values found for project's random forest by grid search}
@@ -200,11 +219,11 @@ sum\_7yr\_GP         &8	&5 &64 &9270.5\\
 \end{center}
 \end{table}
 
-Comparing the project's implementation of Random forest to that of scikit-learn implementation, we further compare against the optimal values found by grid search, shown in table ~\ref{scikit-table}, and ~\ref{opt-table}. As can be seen, the values are quite different, although result in similar accuracy. A high number of trees is consistent between both showing the over-all effect of the Random forest algorithm on improving performance for the classifier implementation. The difference between the values can be due to the different algorithms used and shows that finding optimal values for the specific algorithm is an important consideration when running any machine learning algorithm implementation. Using optimal values for learning, time for 4 processes of 20seconds is a significant improvement over a single process taking 1min 4sec for training GP\_greater\_than\_0, and comparing to table ~\ref{clas-table} the effect of increasing the number trees can be seen in the difference in time. After training however, prediction time is considerably lower, taking $\approx$1sec regardless. Similiarly, training a regressor implementation on sum\_7yr\_GP target label, similiar observations are made. The performance of an ensemble learner is dependent on the accuracy of each component learner and the diversity of the components, especially when using a small set of trees which may be limited due to computational cost. The randomization can cause occurrence of bad predicting trees as well as correlated trees which can lead to poor ensemble decisions, which can be observed when performing multiple training runs using the same parameters which can lead to different accuracy results. Attempts have been made to improve the performance of this model by building a forest of only uncorrelated high performing trees. \cite{Bharathidason2014}
+Comparing the project's implementation of Random forest to that of scikit-learn implementation, we further compare against the optimal values found by grid search, shown in Tables ~\ref{scikit-table}, and ~\ref{opt-table}. As can be seen, the values are quite different, although result in similar accuracy. A high number of trees is consistent between both showing the over-all effect of the Random forest algorithm on improving performance for the classifier implementation. The difference between the values can be due to the different algorithms used and shows that finding optimal values for the specific algorithm is an important consideration when running any machine learning algorithm implementation. Using optimal values for learning, time for 4 processes of 20seconds is a significant improvement over a single process taking 1min 4sec for training GP\_greater\_than\_0, and comparing to Table ~\ref{clas-table} the effect of increasing the number trees can be seen in the difference in time. After training however, prediction time is considerably lower, taking $\approx$1sec regardless. Similiarly, training a regressor implementation on sum\_7yr\_GP target label, similiar observations are made. The performance of an ensemble learner is dependent on the accuracy of each component learner and the diversity of the components, especially when using a small set of trees which may be limited due to computational cost. The randomization can cause occurrence of bad predicting trees as well as correlated trees which can lead to poor ensemble decisions, which can be observed when performing multiple training runs using the same parameters which can lead to different accuracy results. Attempts have been made to improve the performance of this model by building a forest of only uncorrelated high performing trees. \cite{Bharathidason2014}
 
 \subsubsection{Splitting criteria}
 
-When building a decision tree, the splitting criteria by which each level is formed to yield the greatest information gain can be calculated by two common methods; Entropy and Gini impurity. It has been discussed in literature that there exists a minimal difference between the effect of accuracy, however Gini impurity function is computationally less expensive than Entropy since Entropy requires additionally calculating the logarithm of percentage of each class labels in the child nodes. The difference between the splitting criteria is investigated through the implementation of both entropy and Gini impurity in our implementation of Random forest, with results shown in table ~\ref{ent-gini}. Both models were run on a single process.
+When building a decision tree, the splitting criteria by which each level is formed to yield the greatest information gain can be calculated by two common methods; Entropy and Gini impurity. It has been discussed in literature that there exists a minimal difference between the effect of accuracy, however Gini impurity function is computationally less expensive than Entropy since Entropy requires additionally calculating the logarithm of percentage of each class labels in the child nodes. The difference between the splitting criteria is investigated through the implementation of both entropy and Gini impurity in our implementation of Random forest, with results shown in Table ~\ref{ent-gini}. Both models were run on a single process.
 
 \begin{table}[h]
 \caption{Comparison of Entropy and Gini impurity for splitting criteria}
@@ -220,7 +239,7 @@ When building a decision tree, the splitting criteria by which each level is for
 \end{center}
 \end{table}
 
-As shown in table ~\ref{ent-gini}, using the Gini index as the score function is indeed noticeably faster than Entropy.
+As shown in Table ~\ref{ent-gini}, using the Gini index as the score function is indeed noticeably faster than Entropy.
 
 
 \subsection{Machine Learning Algorithm Comparisons}
